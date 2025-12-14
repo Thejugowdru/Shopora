@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.crypto import get_random_string
-
+from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
 from .models import VendorApplication, Vendor
 
 
@@ -9,67 +10,93 @@ class VendorApplicationAdmin(admin.ModelAdmin):
     list_filter = ("status",)
     actions = ["approve_vendor", "reject_vendor"]
 
-    # ADMIN ACTION → APPROVE
+    # APPROVE VENDOR
     def approve_vendor(self, request, queryset):
         for application in queryset:
             if application.status == "approved":
                 continue
 
-            vendor_id = "VEN" + get_random_string(6).upper()
-            temp_password = get_random_string(10)
-
-            # Set temp password for the user
-            application.user.set_password(temp_password)
-            application.user.save()
+            # Generate secret key here (admin only)
+            secret_key = get_random_string(10).upper()
+            hashed_secret_key = make_password(secret_key)
 
             # Create vendor
-            Vendor.objects.create(
+            vendor = Vendor.objects.create(
                 user=application.user,
                 store_name=application.store_name,
                 address=application.address,
-                gstin=application.gstin,
                 phone=application.phone,
-                document=application.document,
-                vendor_id=vendor_id,
+                vendor_secret_key=hashed_secret_key
             )
 
+            # Update application status
             application.status = "approved"
             application.save()
 
-            self.message_user(
-                request,
-                f"Vendor created: {vendor_id} | Password: {temp_password}"
+            user_display = (
+                application.user.get_full_name() or "User"
             )
+
+            # Send email
+            subject = "Your Vendor Account is Approved"
+            message = f"""
+                Dear {user_display},
+
+                Congratulations! Your vendor application for "{application.store_name}" has been approved.
+
+                Vendor ID: {vendor.vendor_id}
+                Vendor Secret Key: {secret_key}
+
+                Please login first as a normal user, then access the vendor dashboard using your Vendor ID and Secret Key.
+
+                Best regards,
+                Shopora Team
+                """
+            send_mail(subject, message, None, [
+                      application.user.email], fail_silently=False)
 
     approve_vendor.short_description = "Approve selected vendor applications"
 
-    # ADMIN ACTION → REJECT
+    # REJECT VENDOR
     def reject_vendor(self, request, queryset):
         for application in queryset:
-            # delete vendor if exists
             Vendor.objects.filter(user=application.user).delete()
+            application.status = "rejected"
+            application.save()
 
-        queryset.update(status="rejected")
-        self.message_user(request, "Vendor(s) rejected and accounts deleted.")
+            user_display = (
+                application.user.get_full_name() or "User"
+            )
+
+            # Send rejection email
+            subject = "Your Vendor Application was Rejected"
+            message = f"""
+                Dear {user_display},
+
+                We regret to inform you that your vendor application for "{application.store_name}" has been rejected.
+
+                You may contact support for further details.
+
+                Best regards,
+                Shopora Team
+                """
+            send_mail(subject, message, None, [
+                      application.user.email], fail_silently=False)
 
     reject_vendor.short_description = "Reject selected vendor applications"
 
-    # HANDLE STATUS CHANGE FROM ADMIN EDIT PAGE
+    # HANDLE STATUS CHANGE IN ADMIN EDIT
     def save_model(self, request, obj, form, change):
-        """
-        If admin edits the entry manually and changes status to rejected,
-        delete Vendor automatically.
-        """
         if change:
             old = VendorApplication.objects.get(pk=obj.pk)
-
-            # status changed from approved → rejected
             if old.status == "approved" and obj.status == "rejected":
                 Vendor.objects.filter(user=obj.user).delete()
-
         super().save_model(request, obj, form, change)
 
 
-admin.site.register(VendorApplication, VendorApplicationAdmin)
+class VendorAdmin(admin.ModelAdmin):
+    list_display = ('vendor_id', 'user', 'store_name')
 
-admin.site.register(Vendor)
+
+admin.site.register(VendorApplication, VendorApplicationAdmin)
+admin.site.register(Vendor, VendorAdmin)

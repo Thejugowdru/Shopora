@@ -17,7 +17,8 @@ class CustomUserAdmin(UserAdmin):
     readonly_fields = ("created_at", "updated_at")  # IMPORTANT FIX
 
     fieldsets = (
-        (None, {"fields": ("email", "username", "password")}),
+        (None, {"fields": ("email", "username",
+         "first_name", "last_name", "password")}),
         ("Permissions", {"fields": ("is_staff",
          "is_superuser", "groups", "user_permissions")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),  # NOW ALLOWED
