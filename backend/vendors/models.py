@@ -29,10 +29,9 @@ class VendorApplication(models.Model):
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     vendor_id = models.CharField(max_length=20, unique=True, editable=False)
-    vendor_secret_key = models.CharField(
-        max_length=128, editable=False)  # hashed
+    vendor_secret_key = models.CharField(max_length=128)  # hashed
     store_name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, editable=False)
     address = models.TextField()
     phone = models.CharField(max_length=20)
 

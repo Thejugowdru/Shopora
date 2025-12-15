@@ -60,6 +60,8 @@ class VendorApplicationAdmin(admin.ModelAdmin):
     # REJECT VENDOR
     def reject_vendor(self, request, queryset):
         for application in queryset:
+            if application.status == "rejected":
+                continue
             Vendor.objects.filter(user=application.user).delete()
             application.status = "rejected"
             application.save()
