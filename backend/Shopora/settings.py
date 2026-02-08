@@ -148,3 +148,5 @@ SIMPLE_JWT = {
 
     "UPDATE_LAST_LOGIN": True,
 }
+
+AUTH_USER_MODEL = "accounts.User"

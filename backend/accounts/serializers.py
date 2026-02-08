@@ -12,10 +12,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone', 'passowrd', 'confirm_password']
+        fields = ['username', 'email', 'phone', 'password', 'confirm_password']
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['match']:
+        if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError(
                 {"confirm_password": "Passwords do not match"}
             )
