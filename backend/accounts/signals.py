@@ -5,14 +5,12 @@ from django.contrib.auth.models import Group
 
 @receiver(post_migrate)
 def create_default_groups(sender, **kwargs):
-    groups = {
-        1: "Customer",
-        2: "Vendor",
-        3: "Shopora Team"
-    }
+    default_groups = [
+        "Customer",
+        "Vendor",
+        "Shopora Team",
+        "Admin",
+    ]
 
-    for group_id, name in groups.items():
-        Group.objects.get_or_create(
-            id=group_id,
-            defaults={"name": name}
-        )
+    for group_name in default_groups:
+        Group.objects.get_or_create(name=group_name)

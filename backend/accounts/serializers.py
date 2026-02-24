@@ -1,36 +1,33 @@
 from rest_framework import serializers
-from django.contrib.auth.models import Group
+from .models import User
 from django.db.models import Q
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone', 'password', 'confirm_password']
+        fields = ['email', 'username', 'phone', 'date_of_birth',
+                  'gender', 'password', 'confirm_password']
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['confirm_password']:
-            raise serializers.ValidationError(
-                {"confirm_password": "Passwords do not match"}
-            )
-        return attrs
+    def validate(self, data):
+        if data.get('password') != data.get('confirm_password'):
+            raise serializers.ValidationError({
+                'confirm_password': 'Password doesn\'t match'
+            })
+        return super().validate(data)
 
     def create(self, validated_data):
         validated_data.pop('confirm_password')
         password = validated_data.pop('password')
+        user = User.objects.create_user(password=password, **validated_data)
 
-        user = User.objects.create_user(
-            password=password,
-            **validated_data
-        )
-
-        customer_group = Group.objects.get(id=1)
+        customer_group = Group.objects.get(name='Customer')
         user.groups.set([customer_group])
 
         return user
@@ -40,33 +37,34 @@ class LoginSerializer(serializers.Serializer):
     identifier = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-    def validate(self, attrs):
-        identifier = attrs.get('identifier').lower()
-        password = attrs.get('password')
-
+    def validate(self, data):
+        identifier = data.get('identifier')
+        password = data.get('password')
         try:
             user = User.objects.get(
-                Q(email__iexact=identifier) |
                 Q(username__iexact=identifier) |
+                Q(email__iexact=identifier) |
                 Q(phone=identifier)
             )
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid credentials")
+            # # 👇 Default key non_field_errors, In react error.response.data.non_field_errors
+            # raise serializers.ValidationError('Invalid credentials')
+
+            # # 👇 In react error.response.data.detail
+            raise serializers.ValidationError({
+                'detail': 'Invalid credentials'
+            })
 
         user = authenticate(username=user.username, password=password)
+
         if not user:
-            raise serializers.ValidationError("Invalid credentials")
+            raise serializers.ValidationError({
+                'detail': 'Invalid credentials'
+            })
 
         if not user.is_active:
-            raise serializers.ValidationError("Account is disabled")
+            raise serializers.ValidationError({
+                'detail': 'Your account is disabled'
+            })
 
-        group = user.groups.first()
-
-        refresh = RefreshToken.for_user(user)
-
-        return {
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-            "username": user.username,
-            "group_id": group.id
-        }
+        return user

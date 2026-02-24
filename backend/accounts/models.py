@@ -1,10 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-    Group
-)
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django.core.validators import RegexValidator
 
 
@@ -41,8 +36,8 @@ class UserManager(BaseUserManager):
             **extra_fields
         )
 
-        # Assign Shopora Team group (ID = 3)
-        team_group = Group.objects.get(id=3)
+        # Assign Admin Team group
+        team_group = Group.objects.get(name='Admin')
         user.groups.set([team_group])
 
         return user
