@@ -1,0 +1,52 @@
+.register-page{
+  min-height:calc(100vh - 120px);
+  background:#f6f6f6;
+}
+
+.register-card{
+  max-width:500px;
+  width:100%;
+  border-radius:12px;
+}
+
+.register-logo{
+  width:120px;
+}
+
+/* remove bootstrap blue focus */
+
+.form-control:focus{
+  border-color:#ff6b00;
+  box-shadow:none;
+}
+
+/* password toggle */
+
+.password-toggle{
+  cursor:pointer;
+}
+
+/* OTP popup */
+
+.otp-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.otp-card{
+  width:320px;
+  position:relative;
+}
+
+.otp-close{
+  position:absolute;
+  right:10px;
+  top:10px;
+}

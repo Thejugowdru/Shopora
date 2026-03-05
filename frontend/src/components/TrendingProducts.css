@@ -1,0 +1,76 @@
+/* section container */
+.product-section {
+    padding: 60px 0;
+    background: #f8f9fa;
+}
+
+/* section header */
+.section-header {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 35px;
+}
+
+/* product card */
+.product-card {
+    position: relative;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: 0.3s ease;
+}
+
+/* hover effect */
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+/* product image */
+.product-card img {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* wishlist icon */
+.wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    background: white;
+    border: none;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* orange button */
+.btn-orange {
+    background: #ff6b00;
+    color: white;
+    border: none;
+}
+
+.btn-orange:hover {
+    background: #e55c00;
+}
+
+/* view card */
+.view-card {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px dashed #ff6b00;
+    border-radius: 10px;
+
+    font-weight: 600;
+}

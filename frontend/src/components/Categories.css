@@ -1,0 +1,42 @@
+/* section padding */
+.categories-section {
+  padding: 60px 0;
+}
+
+/* header style */
+.section-header {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* scroll container */
+.categories-scroll {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* category item */
+.category-item {
+  text-align: center;
+  min-width: 90px;
+}
+
+/* category image */
+.category-item img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* category name */
+.category-item p {
+  font-size: 13px;
+  margin-top: 8px;
+}

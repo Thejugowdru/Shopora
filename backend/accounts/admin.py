@@ -5,7 +5,7 @@ from .models import User
 
 
 class UserAdmin(admin.ModelAdmin):
-    fields = ('id', 'username', 'groups',
+    fields = ('id', 'username', 'email', 'groups',
               'is_active', 'is_staff', 'is_superuser')
 
 

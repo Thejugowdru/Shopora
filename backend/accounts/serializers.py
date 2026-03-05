@@ -12,7 +12,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'phone', 'date_of_birth',
+        fields = ['email', 'username',  'date_of_birth',
                   'gender', 'password', 'confirm_password']
 
     def validate(self, data):
@@ -43,8 +43,7 @@ class LoginSerializer(serializers.Serializer):
         try:
             user = User.objects.get(
                 Q(username__iexact=identifier) |
-                Q(email__iexact=identifier) |
-                Q(phone=identifier)
+                Q(email__iexact=identifier)
             )
         except User.DoesNotExist:
             # # 👇 Default key non_field_errors, In react error.response.data.non_field_errors
