@@ -90,10 +90,12 @@ class SendOTPView(APIView):
         )
         print(f"Email time: {time.perf_counter() - start:.2f}s")
 
-        return Response({
-            "message":
-            "OTP sent successfully."
-        })
+        return Response(
+            {
+                "message": "OTP sent successfully."
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 class RegisterView(generics.CreateAPIView):
@@ -158,9 +160,12 @@ class ChangePasswordView(APIView):
         request.user.temp_password = False
         request.user.save()
 
-        return Response({
-            "message": "Password changed successfully."
-        })
+        return Response(
+            {
+                "message": "Password changed successfully."
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 class UserViewSet(ModelViewSet):
@@ -193,9 +198,12 @@ class UserViewSet(ModelViewSet):
         user.temp_password = False
         user.save()
 
-        return Response({
-            "message": "Password reset successfully."
-        })
+        return Response(
+            {
+                "message": "Password reset successfully."
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 class AddressViewSet(ModelViewSet):
@@ -220,9 +228,12 @@ class LogoutView(APIView):
                 request.data["refresh"]
             ).blacklist()
 
-            return Response({
-                "message": "Logged out successfully."
-            })
+            return Response(
+                {
+                    "message": "Logged out successfully."
+                },
+                status=status.HTTP_200_OK
+            )
 
         except KeyError:
             raise ValidationError({
